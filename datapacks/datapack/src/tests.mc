@@ -6,9 +6,9 @@ function settings {
 	# How many ticks to run the tests for. Higher values provide more accurate data, but take longer. (Default: 1200)
 	# At 1200 (about 60 seconds per test at 50ms/t) there is a +-0.1% margin of error.
 	# At 20 (about a second per test at 50ms/t) there is a +-3.00% margin of error.
-	scoreboard players set .tick_count v 200
+	scoreboard players set .tick_count v 1000
 	# Maximum time to use per tick (Default/Max 50).
-	scoreboard players set .max_ms_per_tick v 30
+	scoreboard players set .max_ms_per_tick v 20
 	# The name of the first test. This is used to identify the test in the results.
 	data modify storage perf_tool:ram test_a_name set value '{"text": "My Test A"}'
 	# The name of the second test. This is used to identify the test in the results.
@@ -17,7 +17,7 @@ function settings {
 
 dir a {
 	function test {
-		execute store result score __math__.N value run random value 1..10000
+		scoreboard players add __math__.N value 1
 		# tellraw @s [{"text":"Input: ","color":"aqua"},{"score":{"name":"__math__.N","objective":"value"},"color":"red"}]
 		function tests:a/test/main 
 		# tellraw @s [{"text":"Output: ","color":"aqua"},{"score":{"name":"__math__.x_n","objective":"value"},"color":"red"}]
@@ -50,18 +50,18 @@ dir a {
 		scoreboard players set 2 value 2
 		scoreboard players set __math__.total_iterations value 0
 		scoreboard players set __math__.times_called value 0
+		scoreboard players set __math__.N value 0
 	}
 	function cleanup {
 		scoreboard players operation __math__.average_iterations value = __math__.total_iterations value
 		scoreboard players operation __math__.average_iterations value /= __math__.times_called value
 		tellraw @a [{"text":"Average Iterations: ","color":"gold"},{"score":{"name":"__math__.average_iterations","objective":"value"},"color":"red"}]
-		scoreboard players reset * value
 	}
 }
 
 dir b {
 	function test {
-		execute store result score $input value run random value 1..10000
+		scoreboard players add $input value 1
 		# Initialize output
 		scoreboard players set $output value 0
 
@@ -152,6 +152,8 @@ dir b {
 
 	function setup {
 		tellraw @a [{"text":"|◘ ","color":"dark_gray"}, {"text":"Algorithm: ","color":"aqua"}, {"text":"Binary Decomposition","color":"yellow"}]
+		scoreboard players reset * value
+		scoreboard players set $input value 0
 	}
 
 	function cleanup {
